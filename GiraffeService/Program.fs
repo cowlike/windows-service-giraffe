@@ -5,6 +5,7 @@ open System.IO
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
+open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
@@ -61,6 +62,7 @@ let webApp =
             choose [
                 route "/" >=> indexHandler "world"
                 routef "/hello/%s" indexHandler
+                route "/health" >=> Successful.OK "Good to go!"
             ]
         setStatusCode 404 >=> text "Not Found" ]
 
@@ -101,19 +103,21 @@ let configureLogging (builder : ILoggingBuilder) =
            .AddConsole()
            .AddDebug() |> ignore
 
+let configureWeb (builder : IWebHostBuilder) =
+  let contentRoot = Directory.GetCurrentDirectory()
+  builder.UseKestrel()
+         .UseContentRoot(contentRoot)
+         .UseIISIntegration()
+         .UseWebRoot(Path.Combine(contentRoot, "WebRoot"))
+         .Configure(Action<IApplicationBuilder> configureApp) |> ignore
+
 [<EntryPoint>]
-let main _ =
-    let contentRoot = Directory.GetCurrentDirectory()
-    let webRoot     = Path.Combine(contentRoot, "WebRoot")
-    WebHostBuilder()
-        .UseWindowsService()
-        .UseKestrel()
-        .UseContentRoot(contentRoot)
-        .UseIISIntegration()
-        .UseWebRoot(webRoot)
-        .Configure(Action<IApplicationBuilder> configureApp)
-        .ConfigureServices(configureServices)
-        .ConfigureLogging(configureLogging)
-        .Build()
-        .Run()
+let main args =
+    Host.CreateDefaultBuilder(args)
+      .UseWindowsService()
+      .ConfigureLogging(configureLogging)
+      .ConfigureServices(configureServices)
+      .ConfigureWebHostDefaults(Action<IWebHostBuilder> configureWeb)
+      .Build()
+      .Run()
     0
