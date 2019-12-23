@@ -103,14 +103,6 @@ let configureLogging (builder : ILoggingBuilder) =
            .AddConsole()
            .AddDebug() |> ignore
 
-// let configureWeb = Action<IWebHostBuilder> (fun (builder : IWebHostBuilder) ->
-//   let contentRoot = Directory.GetCurrentDirectory()
-//   builder.UseKestrel()
-//          .UseContentRoot(contentRoot)
-//          .UseIISIntegration()
-//          .UseWebRoot(Path.Combine(contentRoot, "WebRoot"))
-//          .Configure(Action<IApplicationBuilder> configureApp) |> ignore)
-
 let configureWeb (builder : IWebHostBuilder) =
   let contentRoot = Directory.GetCurrentDirectory()
   builder.UseKestrel()
@@ -121,46 +113,11 @@ let configureWeb (builder : IWebHostBuilder) =
 
 [<EntryPoint>]
 let main args =
-    let contentRoot = Directory.GetCurrentDirectory()
-
     Host.CreateDefaultBuilder(args)
       .UseWindowsService()
       .ConfigureLogging(configureLogging)
       .ConfigureServices(configureServices)
-    //   .ConfigureWebHostDefaults(configureWeb)
       .ConfigureWebHostDefaults(Action<IWebHostBuilder> configureWeb)
       .Build()
       .Run()
-
-      (*
-      dotnet publish -r win7-x86 \
-    -c Release -o /c/apps/testapps/giraffeTest \
-    -p:PublishSingleFile=True \
-    -p:PublishTrimmed=True \
-    -p:UseAppHost=True
-      *)
-    // WebHostBuilder()
-    //     // .UseWindowsService()
-    //     .UseKestrel()
-    //     .UseContentRoot(contentRoot)
-    //     .UseIISIntegration()
-    //     .UseWebRoot(webRoot)
-    //     .Configure(Action<IApplicationBuilder> configureApp)
-    //     .ConfigureServices(configureServices)
-    //     .ConfigureLogging(configureLogging)
-    //     .Build()
-    //     .Run()
-
-            // Host.CreateDefaultBuilder(args)
-            //     .UseWindowsService()
-            //     .ConfigureServices((hostContext, services) =>
-            //     {
-            //         services.AddHostedService<ServiceA>();
-            //         services.AddHostedService<ServiceB>();
-            //     })
-            //     .ConfigureWebHostDefaults(webBuilder =>
-            //     {
-            //         webBuilder.UseStartup<Startup>();
-            //     });
-
     0
