@@ -2,6 +2,7 @@ module GiraffeService.App
 
 open System
 open System.IO
+open System.IO.Ports
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
@@ -62,6 +63,7 @@ let webApp =
             choose [
                 route "/" >=> indexHandler "world"
                 routef "/hello/%s" indexHandler
+                route "/ports" >=> Successful.OK (SerialPort.GetPortNames())
                 route "/health" >=> Successful.OK "Good to go!"
             ]
         setStatusCode 404 >=> text "Not Found" ]
@@ -109,6 +111,7 @@ let configureWeb (builder : IWebHostBuilder) =
          .UseContentRoot(contentRoot)
          .UseIISIntegration()
          .UseWebRoot(Path.Combine(contentRoot, "WebRoot"))
+         .UseUrls([| "http://localhost:8080"; "https://localhost:8081" |])
          .Configure(Action<IApplicationBuilder> configureApp) |> ignore
 
 [<EntryPoint>]
