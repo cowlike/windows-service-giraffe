@@ -30,8 +30,6 @@ sc delete "Sample Service"
 
 ```bash
 curl -k -H "Accept: application/json" https://localhost:8081/ports |json_pp
-
 curl -k -H "Accept: application/xml" https://localhost:8081/ports
-
 curl -k https://localhost:8081/hello/Foo
 ```
