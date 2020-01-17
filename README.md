@@ -25,3 +25,13 @@ sc start "Sample Service"
 sc stop "Sample Service"
 sc delete "Sample Service"
 ```
+
+## call it
+
+```bash
+curl -k -H "Accept: application/json" https://localhost:8081/ports |json_pp
+
+curl -k -H "Accept: application/xml" https://localhost:8081/ports
+
+curl -k https://localhost:8081/hello/Foo
+```
